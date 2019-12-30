@@ -3,13 +3,11 @@ import sys
 
 np.set_printoptions(threshold=sys.maxsize)
 
-def check_overlap( host_xyz, host_rad, guest_xyz, guest_rad, scale):
+def check_overlap( host_xyz, host_rad, guest_xyz, scale):
 
     hits = []
 
     ndim, nat, ntrial = guest_xyz.shape
-    print(host_rad.shape)
-    print(guest_rad.shape)
 
     nh = 0
 
@@ -17,7 +15,6 @@ def check_overlap( host_xyz, host_rad, guest_xyz, guest_rad, scale):
         overlap = 0
         for at in range(nat):
             dist_vecs = np.subtract(host_xyz, guest_xyz[:,at,trial][:,None])
-            #threshold = np.add(host_rad, guest_rad[at]) * scale
             threshold = host_rad[:,at] * scale
             distances = np.subtract(np.linalg.norm(dist_vecs, axis=0),\
                                         threshold)
@@ -34,17 +31,17 @@ def check_overlap( host_xyz, host_rad, guest_xyz, guest_rad, scale):
 
     return hits
 
-def check_overlap2(host_xyz, host_rad, guest_xyz, guest_rad, scale):
+def check_overlap2(host_xyz, host_rad, guest_xyz, scale):
 
     hits = []
 
-    print(host_rad.shape)
-    print(guest_rad.shape)
+    ndim, nat, ntrial = guest_xyz.shape
 
-    for trial in range(guest_xyz.shape[2]):
-        nh = 0
+    nh = 0
+
+    for trial in range(ntrial):
         overlap = 0
-        for at in range(guest_xyz.shape[1]):
+        for at in range(nat):
             dist_vecs = np.subtract(host_xyz[:,:,trial], guest_xyz[:,at,trial][:,None])
             threshold = host_rad[:,at] * scale
             distances = np.subtract(np.linalg.norm(dist_vecs, axis=0),\

@@ -6,7 +6,7 @@ def expand_cryst(cryst, vec=None):
     def expand_lattice(cryst, factor=(1.1, 1.1, 1.1)):
         cryst.aniso_inflate_cell(factor)
 
-    target_void_vol   = 26
+    target_void_vol   = 18 # Hard-sphere volume of water molecule.
     exp_lv = 1.0
     exp_max = 1.5
     step = 0.01
@@ -23,19 +23,19 @@ def expand_cryst(cryst, vec=None):
     for i in range(50):
 
         v_old = vec
-        vec = (unit + i*step)/v_old
+        expansion = i*step
+        vec = (unit + expansion)/v_old
 
         expand_lattice(cryst, factor=vec)
         print(f"iter {i}, current expansion level = {unit + i*step}")
         v.calc_void(cryst, probesize=probe_r, gridsize=grid_s)
         if v.voids and (max(v.voids) > target_void_vol):
-            print(v.lis)
             break
 
     if v.voids != []:
         centroids = np.array(v.centroids)
         centroids = cryst.lattice.to_cartesian(centroids)
-        return(centroids, v)
+        return(centroids, v, expansion)
     else:
         return 0
 

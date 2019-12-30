@@ -1,5 +1,6 @@
-import numpy as np
 import itertools
+import numpy as np
+from cspy.alpha.molecule import Molecule
 
 def cartesian_symm_ops(cryst):
 
@@ -29,6 +30,10 @@ def cartesian_symm_ops(cryst):
 def make_images(trials, radii, symm_ops):
     images = []
 
+    bonds_dictionary = Molecule.bonds_dictionary
+    rad = [[bonds_dictionary[(host_at, guest_at)] for guest_at in
+                    ["O", "H", "H"]] for host at in ["O", "H", "H"]]
+
     for op in symm_ops[:]:
         nat, nmol = trials.shape[1:]
         im = trials.reshape(3,nat*nmol).T
@@ -37,12 +42,9 @@ def make_images(trials, radii, symm_ops):
         im = im.reshape(3,nat,nmol)
         images.append(im)
 
-    images = np.concatenate(images[1:], axis=1) # Skip identity of 1st mol.
+    images = np.concatenate(images[1:], axis=1) # Skip identity op of mol.
 
-    #for atom in range(images[:,:,0].shape[1]):
-    #    print(self.lab[atom%4], *images[:,atom,0])
-
-    radii  = np.tile(radii, len(symm_ops)-1).reshape((-1,3))
+    radii  = np.array(rad)
     return images, radii
 
 if __name__ == '__main__':

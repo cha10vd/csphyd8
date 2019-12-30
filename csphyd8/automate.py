@@ -21,8 +21,7 @@ def gen_guests(structure, guest, trial_xyz, trial_rad):
         xyz = xyz[:,:,hits]
         return xyz
 
-
-    voids = expand_cryst(structure)
+    voids, v, expansion = expand_cryst(structure)
     if voids is 0:
         return []
     # 1. Make supercell of original crystal and get
@@ -33,7 +32,7 @@ def gen_guests(structure, guest, trial_xyz, trial_rad):
     nVoids = len(voids)
     trials = np.array_split(trial_xyz, nVoids, axis=-1)
     for i, void in enumerate(voids):
-        trials[i]    = trials[i] + np.array(voids[0])[:,None,None]
+        trials[i]    = trials[i] + np.array(void])[:,None,None]
     trials = np.dstack(trials)
     # 3. Check for host-guest overlap and filter results
     hits      = check_overlap(sc_xyz, sc_rad, trials, trial_rad, 1.1)
@@ -44,13 +43,18 @@ def gen_guests(structure, guest, trial_xyz, trial_rad):
     sc_xyz, sc_rad = make_images(trials, trial_rad, symm_ops)
     hits      = check_overlap2(sc_xyz, sc_rad, trials, trial_rad, 1.1)
     trials    = filter_hits(trials,hits)
-    crystals  = make_cryst(structure, guest, trials)
-    return crystals
 
-def reoptimize_inserts(crystal_list):
+    return structure, expansion, trials
+
+def insert_guests(structure, trials):
+    crystals =  make_cryst(structure, guest, trials)
+
+def reoptimize_inserts(crystal_list, fname):
+
+    _MF_ROOT = '/scratch/vdn1m17/multipoles/'
+
     for crystal in crystal_list:
-        crystal.neighcrys_args['multipole_file'] = \
-        "/home/vdn1m17/Documents/phd/scripts/guest_insert/guest_insert/tests/automation/dipica_mp.smult"
+        crystal.neighcrys_args['multipole_file'] = _MF_ROOT + fname
         crystal.stdMin()
 
     return crystal_list
