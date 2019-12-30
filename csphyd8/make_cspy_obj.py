@@ -18,14 +18,14 @@ def make_mol(xyz_list, molecule):
 
     return molecules
 
-def make_cryst(cryst, mol, xyz):
+def make_cryst(cryst, mol, xyz, idx):
     molecules = make_mol(xyz, mol)
     crystals = []
     for i, mol in enumerate(molecules):
         try:
             c = deepcopy(cryst)
             c.unique_molecule_list.append(mol)
-            c.name += ' insert {}'.format(str(i))
+            c.name += ' insert {}'.format(str(idx[i]))
             c.update_sfac()
             crystals.append(c)
         except:

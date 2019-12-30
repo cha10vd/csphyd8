@@ -39,13 +39,17 @@ def check_overlap2(host_xyz, host_rad, guest_xyz, scale):
 
     nh = 0
 
+    thresh_rad = host_rad * scale
+
     for trial in range(ntrial):
         overlap = 0
         for at in range(nat):
             dist_vecs = np.subtract(host_xyz[:,:,trial], guest_xyz[:,at,trial][:,None])
-            threshold = host_rad[:,at] * scale
+            threshold = thresh_rad[:,at]
             distances = np.subtract(np.linalg.norm(dist_vecs, axis=0),\
                                         threshold)
+            #distances = np.subtract(np.linalg.norm(dist_vecs, axis=0).reshape((3,-1)),\
+            #        threshold[:,None]).reshape(-1)
             min_dist  = np.min(distances)
             if min_dist < 0.0:
                 overlap = 1
@@ -54,6 +58,8 @@ def check_overlap2(host_xyz, host_rad, guest_xyz, scale):
         if overlap == 0:
             hits.append(trial)
             nh += 1
+
+    print('Number of hits identified: {}'.format(nh))
 
     return hits
 

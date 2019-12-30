@@ -32,19 +32,19 @@ def gen_guests(structure, guest, trial_xyz, trial_rad):
     nVoids = len(voids)
     trials = np.array_split(trial_xyz, nVoids, axis=-1)
     for i, void in enumerate(voids):
-        trials[i]    = trials[i] + np.array(void])[:,None,None]
+        trials[i]    = trials[i] + np.array(void)[:,None,None]
     trials = np.dstack(trials)
     # 3. Check for host-guest overlap and filter results
-    hits      = check_overlap(sc_xyz, sc_rad, trials, trial_rad, 1.1)
-    print(hits)
-    trials    = filter_hits(trials, hits)
+    hits1  = check_overlap(sc_xyz, sc_rad, trials, 1.2)
+    trials    = filter_hits(trials, hits1)
     # 4. Generate symmetry related copies of accepted 
     #    guests and check guest-image overlap
     sc_xyz, sc_rad = make_images(trials, trial_rad, symm_ops)
-    hits      = check_overlap2(sc_xyz, sc_rad, trials, trial_rad, 1.1)
-    trials    = filter_hits(trials,hits)
+    hits2      = check_overlap2(sc_xyz, sc_rad, trials, 1.2)
+    hit_ids = [hits1[idx] for idx in hits2]
+    trials    = filter_hits(trials,hits2)
 
-    return structure, expansion, trials
+    return structure, expansion, trials, hits2#hit_ids
 
 def insert_guests(structure, trials):
     crystals =  make_cryst(structure, guest, trials)
@@ -75,6 +75,7 @@ if __name__ == '__main__':
 
 
     for structure in structures[5:6]:
-        guests = gen_guests(structure, guest, trial_xyz, trial_rad)
-    make_res_file(guests)
+        structure, expansion, guests, ids = gen_guests(structure, guest, trial_xyz, trial_rad)
+    crystals = make_cryst(structure, guest, guests, ids)
+    make_res_file(crystals)
     #structures = minimize_structures()

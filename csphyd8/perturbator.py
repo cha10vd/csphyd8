@@ -20,7 +20,7 @@ logger.addHandler(ch)
 #log_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 
 
-def perturb_mol(mol: Molecule, ntrials: int=100,
+def perturb_mol(mol: Molecule, ntrials: int=1000,
                 labels: bool=False) -> np.ndarray:
     """Pseudo-random generation of displacement and rotation perturbations
     about the origin of space.

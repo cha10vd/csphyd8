@@ -34,7 +34,12 @@ def expand_cryst(cryst, vec=None):
 
     if v.voids != []:
         centroids = np.array(v.centroids)
-        centroids = cryst.lattice.to_cartesian(centroids)
+        centroids += (centroids < 0)*1
+        print("CENTROIDS TEXT: {}", centroids)
+        frac, whole = np.modf(centroids)
+        print("CENTROIDS NUMPY: {}", frac)
+        centroids = cryst.lattice.to_cartesian(frac)
+        #centroids = cryst.lattice.to_cartesian(centroids)
         return(centroids, v, expansion)
     else:
         return 0

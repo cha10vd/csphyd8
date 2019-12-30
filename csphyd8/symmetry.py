@@ -15,11 +15,12 @@ def cartesian_symm_ops(cryst):
 
     images = []
 
-    translations = np.array(list(itertools.product([0,-1,1], repeat=3)))
+    translations = np.array(list(itertools.product([0,-3-2,-1,1,2,3], repeat=3)))
     translations = translations @ to_cart
 
     expanded = []
     for op in symm_ops:
+        print(op)
         for trans in translations:
             expanded.append((op[0], op[1] + trans))
 
@@ -31,8 +32,8 @@ def make_images(trials, radii, symm_ops):
     images = []
 
     bonds_dictionary = Molecule.bonds_dictionary
-    rad = [[bonds_dictionary[(host_at, guest_at)] for guest_at in
-                    ["O", "H", "H"]] for host at in ["O", "H", "H"]]
+    #rad = [[bonds_dictionary[(host_at, guest_at)] for guest_at in
+    #                ["O", "H", "H"]] for host_at in ["O", "H", "H"]]
 
     for op in symm_ops[:]:
         nat, nmol = trials.shape[1:]
@@ -43,6 +44,12 @@ def make_images(trials, radii, symm_ops):
         images.append(im)
 
     images = np.concatenate(images[1:], axis=1) # Skip identity op of mol.
+
+    rad = []
+    for mol in range(len(symm_ops)-1):
+        for atom in ["O","H","H"]:
+            rad.append([bonds_dictionary[(atom, l)] for l in \
+                                         ["O","H","H"]])
 
     radii  = np.array(rad)
     return images, radii
